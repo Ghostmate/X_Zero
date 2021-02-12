@@ -33,7 +33,7 @@ enum eCon {
     x_o = 3
 };
 
-int iCheckWinningMove(field_x,int,int);
+int iCheckWinningMove(field_x &,int,int);
 
 void vCalcMove(const field_x &, field_x &);
 
@@ -47,21 +47,28 @@ int iCheckCoordinates(field_x);
 
 int main(void) {
     srand(time(0));
-    //int iLocale = eng;
-    field_x iField{{2,1,1},{1,2,1},{1,1,1}};
-    /*do {
-  int iA;
-  std::cout << sIntroduction[iLocale];
-  std::cin >> iA;
-  switch(iA)
-  {
-    case 0:
-    break;
-    case 1:
-    break;
-  }
+    int iLocale = eng;
+    field_x iField{{1,1,1},{1,1,1},{1,1,1}};
+    do {
+        int iA;
+        std::cout << sIntroduction[iLocale];
+        std::cin >> iA;
 
-  } while(1);*/
+        if(std::cin.fail()) {
+            std::cin.clear();
+            std::cin.ignore(500,'\n');
+        }
+
+        switch(iA)
+        {
+        case 0:
+            break;
+        case 1:
+            break;
+        }
+
+    } while(1);
+
     field_x vChoices;
     vCalcMove(iField, vChoices);
 
@@ -202,36 +209,56 @@ void vCalcMove(const field_x &lField, field_x &vChoices) {
 
 
 
-/*
-int iCheckWinningMove(int lField[basic][basic],int x,int y) {
-  uint iResult{0};
 
-  for(int i = 0; i < basic; ++i) {
+int iCheckWinningMove(const field_x &lField,int x,int y) {
+    int iResult{1};
+
+
     if(x==y || x == basic - y) {
-      iResult += lField[i][i];
-      iResult += lField[basic - i][i] << 4;
-      }
-    iResult += lField[x][i]<<(4 * i + 8);
-    iResult += lField[i][y]<<(4 * i + 20);
-  }
-
-  for(int i = 0; i < 8; ++i) {
-    if((iResult >> (4 * i)) & 10)
-    return ((iResult >> (4 * i)) & 15);
-  }
-  return 0;
-};
-
-int iCheckCoordinates(int lField[basic][basic]) {
-  int iResult{0};
-  for(int i = 0; i < basic; ++i) {
-    iResult = iCheckWinningMove(lField, i, i);
-    if((iResult & 3) == 3)
-      return 1;
-    if((iResult & 12) == 12)
-      return 2;
+        for(int i = 0; i < basic; ++i)
+            iResult *= lField[i][i];
+        if(iResult == 8)
+            return 1;
+        if(iResult == 64)
+            return 2;
+        iResult = 1;
     }
-  return 0;
+    if(x == basic - y) {
+        for(int i = 0; i < basic; ++i)
+            iResult *= lField[basic - i - 1][i];
+        if(iResult == 8)
+            return 1;
+        if(iResult == 64)
+            return 2;
+        iResult = 1;
+    }
+    for(int i = 0; i < basic; ++i)
+        iResult *= lField[x][i]<<(4 * i + 8);
+    if(iResult == 8)
+        return 1;
+    if(iResult == 64)
+        return 2;
+    iResult = 1;
+    for(int i = 0; i < basic; ++i)
+        iResult *= lField[i][y]<<(4 * i + 20);
+    if(iResult == 8)
+        return 1;
+    if(iResult == 64)
+        return 2;
+    return 0;
 };
 
-*/
+
+int iCheckCoordinates(const field_x &lField) {
+    int iResult{0};
+    for(int i = 0; i < basic; ++i) {
+        iResult = iCheckWinningMove(lField, i, i);
+        if((iResult & 3) == 3)
+            return 1;
+        if((iResult & 12) == 12)
+            return 2;
+    }
+    return 0;
+};
+
+
